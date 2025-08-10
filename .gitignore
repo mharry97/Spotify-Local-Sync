@@ -5,6 +5,9 @@
 __pycache__/
 *.pyc
 
+# IDE stuff
+.idea
+
 # Local data files
 *.db
 

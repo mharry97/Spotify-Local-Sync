@@ -10,12 +10,15 @@ def sync_local():
 
   # Get an active database connection and cursor
   con, cur = initialise_database()
+  supported_extensions = ('.mp3','.flac')
 
   local_tracks = []
   # Walk through the directory tree
   for root, dirs, files in os.walk(os.getenv("LOCAL_MEDIA_PATH")):
     # Loop through each file found in the current directory
     for file in files:
+      if file.startswith('.') or not file.lower().endswith(supported_extensions):
+        continue
       # Create full path
       full_path = os.path.join(root, file)
 

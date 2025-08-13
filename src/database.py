@@ -87,3 +87,55 @@ def get_coverage_stats():
       "coverage": round(coverage_percent, 2)
     }
   return None
+
+# Get songs with no matches and all spotify songs for fuzzy matching
+def get_potential_fuzzy_matches():
+  con, cur = initialise_database()
+
+  # Fetch all mismatches
+  cur.execute("""
+        SELECT
+          l.audio_hash,
+          l.artist,
+          l.album_name,
+          l.name,
+          l.file_type,
+          l.file_path
+        FROM
+          local_tracks l
+        LEFT JOIN spotify_tracks s ON l.gen_id = s.gen_id
+        WHERE  s.gen_id IS NULL
+        ORDER BY l.artist ASC
+      """)
+
+  unmatched_songs = cur.fetchall()
+
+  # Fetch all spotify songs
+  cur.execute("""
+          SELECT
+            s.gen_id,
+            s.first_artist,
+            s.album_name,
+            s.name
+          FROM
+            spotify_tracks s
+        """)
+
+  spotify_songs = cur.fetchall()
+
+  con.close()
+
+  return unmatched_songs, spotify_songs
+
+
+
+# Remove a song
+def delete_song(song):
+  con, cur = initialise_database()
+
+  # Fetch all mismatches
+  cur.execute("""
+  DELETE FROM local_tracks WHERE name = "?"
+  """,song)
+  con.commit()
+  con.close()

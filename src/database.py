@@ -127,6 +127,28 @@ def get_potential_fuzzy_matches():
 
   return unmatched_songs, spotify_songs
 
+# Get data for specific local song
+def get_local_song(audio_hash):
+  con, cur = initialise_database()
+
+  cur.execute("""
+    SELECT
+      l.audio_hash,
+      l.artist,
+      l.album_name,
+      l.name,
+      l.file_type,
+      l.file_path
+    FROM
+      local_tracks l
+    WHERE
+      audio_hash = ?
+  """, (audio_hash, ))
+
+  song_data = cur.fetchone()
+  con.close()
+  return song_data
+
 
 
 # Remove a song
